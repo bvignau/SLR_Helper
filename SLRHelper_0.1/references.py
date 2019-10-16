@@ -194,7 +194,7 @@ def filtre(L,app):
 def genBib(L, file):
     with open(file,'w') as bibFile:
         for ref in L:
-            bibref="@MISC{"+ref.author.split(' ')[1]+ref.year+ref.title.split(' ')[0]+",\n"
+            bibref="@MISC{"+ref.author.split(',')[0].split(' ')[1]+ref.year+ref.title.split(' ')[0]+",\n"
             bibref+="author = {"+ref.author+"},\n"
             bibref+="misc = {"+ref.misc+"},\n"
             bibref+="title = {"+ref.title+"},\n"

@@ -43,6 +43,7 @@ def recupID(requests,path):
             with open(file) as bibtex_file:
                 #print("open :"+str(file))
                 bib_database = bibtexparser.load(bibtex_file)
+                # Merge ref by ID
                 for ref in bib_database.entries:
                     if ref['ID'] not in ida:
                         ida[ref['ID']]=[r]
@@ -56,6 +57,41 @@ def recupID(requests,path):
             bibtex_file.write(writer.write(db))
         #print(str(ida))
         return ida, db
+
+def CheckFile(file, abort):
+    if not os.path.isfile(file):
+        print("[!] Error the file "+file+" doesn't exist")
+        if abort :
+            print("[!] Abort")
+            sys.exit()
+        else :
+            return False
+    else :
+        return True
+
+def Mergefinal(base,snow):
+    if CheckFile(base,True) and CheckFile(snow,True):
+        db = bibtexparser.bibdatabase.BibDatabase()
+        with open(base) as baseFile:
+            with open(snow) as snowFile:
+                base_bib=bibtexparser.load(baseFile)
+                snow_bib=bibtexparser.load(snowFile)
+                # check all ref in base file
+                for bref in base_bib.entries:
+                    add = True
+                    # compare to all ref in snow file
+                    for sref in snow_bib.entries:
+                        # if their are identical, we can add one of them to the final bib and stop the loop
+                        if bref['ID'] == sref['ID'] :
+                            add = False
+                            db.entries.append(bref)
+                            break
+                    if add :
+                        db.entries.append(bref)
+                        db.entries.append(sref)
+        return db
+
+
 
 # To generate a txt file and a CSV file for each request where the paper appears
 def GenDoc(directory,request,path,CSV,TEXTE,title):

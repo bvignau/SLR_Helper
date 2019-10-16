@@ -1,6 +1,6 @@
 import configparser
 #from refextract import extract_references_from_file
-from bib_parser import GenRequest, recupID, ShowBar, GenDirectories, sort, ShowBar
+from bib_parser import GenRequest, recupID, ShowBar, GenDirectories, sort, ShowBar, Mergefinal
 from references import dump_extract, Merge_All_List, filtre, Filtre_title, genBib
 import argparse
 import shutil
@@ -41,7 +41,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('command')
     arg = parser.parse_args()
-    if arg.command not in ["snowball","mergeBib","start"]:
+    if arg.command not in ["snowball","mergeBib","start","final"]:
         print("Error, unknow command")
         print("Use : 'slrh start' to create a directory and a empty config file")
         print("Use : 'slrh mergeBib' to merge all the bib file in the 'bib' folder, print some stats about the bib files merged, and create folders for each paper to analyse.")
@@ -86,10 +86,15 @@ def main():
             snowball=Merge_All_List(all,COMPARISON)
             #TODO VERIF
             print("[*] Merge completed")
+            print("[*] "+str(len(snowball))+" differents references extracted")
             final=filtre(snowball,APPEARANCE)
             final=Filtre_title(final,KWORDS,NKWORDS)
+            print("[*] "+str(len(final))+" references add after filter")
             genBib(final,"snowball.bib")
             print("[+] BibFile 'snowball.bib' created with all the references to add")
+            print("[*] Please check the file and change the unknow ref")
+        if arg.command == "final":
+            db=Mergefinal("final.bib","snowball.bib")
 
 
 if __name__ == '__main__':
