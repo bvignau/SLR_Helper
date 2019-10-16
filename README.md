@@ -9,6 +9,7 @@ To install SRLHelper you will need : python2.7 & python3.7
 install pip for python2.7
 then : 
 sudo pip2 install refextract
+sudo pip3 install bibtexparser
 sudo ./update.sh 
 # Use
 SLRHelper 
