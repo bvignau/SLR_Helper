@@ -43,9 +43,9 @@ def main():
     arg = parser.parse_args()
     if arg.command not in ["snowball","mergeBib","start"]:
         print("Error, unknow command")
-        print("Use : 'SRLHelper start' to create a directory and a empty config file")
-        print("Use : 'SRLHelper mergeBib' to merge all the bib file in the 'bib' folder, print some stats about the bib files merged, and create folders for each paper to analyse.")
-        print("Use : 'SRLHeper snowball' to dump all references from all PDF in all sub folders of the 'Results' folder, create a CSV file with all extracted references, and a bib file with all the filtered references.")
+        print("Use : 'slrh start' to create a directory and a empty config file")
+        print("Use : 'slrh mergeBib' to merge all the bib file in the 'bib' folder, print some stats about the bib files merged, and create folders for each paper to analyse.")
+        print("Use : 'slrh snowball' to dump all references from all PDF in all sub folders of the 'Results' folder, create a CSV file with all extracted references, and a bib file with all the filtered references.")
     else : 
         if arg.command == "start":
             if os.path.isdir(BASE_DIR) == False:
