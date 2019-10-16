@@ -89,7 +89,9 @@ def Mergefinal(base,snow):
                     if add :
                         db.entries.append(bref)
                         db.entries.append(sref)
-        return db
+        with open("corpus.bib",'w') as bibtex_file :
+            writer= bibtexparser.bwriter.BibTexWriter()
+            bibtex_file.write(writer.write(db))
 
 
 
