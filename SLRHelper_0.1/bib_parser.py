@@ -4,6 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import csv
+import sys
 
 #from pygraphviz import *
 BASE_DIR="./Results/"
@@ -18,6 +19,7 @@ def autolabel(rects,ax):
                     textcoords="offset points",
                     ha='center', va='bottom')
 
+# Function to generate the list of all requests 
 def GenRequest(req):
     requests=[]
     for r1 in req[0]:
@@ -26,34 +28,39 @@ def GenRequest(req):
             requests.append(request)
     return requests
 
+# To create all the ID of the folders within the Results folder.
+# Each one is created as : Number_1stAuthor_Year_1stTitleWord
 def recupID(requests,path):
     ida={}
-    os.chdir("bib")
-    db = bibtexparser.bibdatabase.BibDatabase()
-    #print(str(db.entries))
-    for r in requests:
-        file=r+".bib"
-        with open(file) as bibtex_file:
-            print("open :"+str(file))
-            bib_database = bibtexparser.load(bibtex_file)
-            for ref in bib_database.entries:
-                if ref['ID'] not in ida:
-                    ida[ref['ID']]=[r]
-                    db.entries.append(ref) # to generate the final bib file
-                else :
-                    ida[ref['ID']].append(r)
-    print("nombre d'articles différents = "+str(len(ida)))
-    os.chdir(path)
-    with open("final.bib",'w') as bibtex_file :
-        writer= bibtexparser.bwriter.BibTexWriter()
-        bibtex_file.write(writer.write(db))
-    #print(str(ida))
-    return ida, db
+    if not os.path.isdir("bib") :
+        print("[!] Error bib folder missing")
+        sys.exit()
+    else :
+        os.chdir("bib")
+        db = bibtexparser.bibdatabase.BibDatabase()
+        for r in requests:
+            file=r+".bib"
+            with open(file) as bibtex_file:
+                #print("open :"+str(file))
+                bib_database = bibtexparser.load(bibtex_file)
+                for ref in bib_database.entries:
+                    if ref['ID'] not in ida:
+                        ida[ref['ID']]=[r]
+                        db.entries.append(ref) # to generate the final bib file
+                    else :
+                        ida[ref['ID']].append(r)
+        print("[*] Total of differents references = "+str(len(ida)))
+        os.chdir(path)
+        with open("final.bib",'w') as bibtex_file :
+            writer= bibtexparser.bwriter.BibTexWriter()
+            bibtex_file.write(writer.write(db))
+        #print(str(ida))
+        return ida, db
 
+# To generate a txt file and a CSV file for each request where the paper appears
 def GenDoc(directory,request,path,CSV,TEXTE,title):
     os.chdir(directory)
     fname="analyse.txt"
-    print("request = "+str(request))
     with open(fname,"w") as f:
         f.writelines([title,'\n'])
         for t in TEXTE:
@@ -72,12 +79,11 @@ def GetTitleFromRef(ref, db):
         if r['ID'] == ref :
             return r['title']
 
+# To create all the directories with the good number
 def GenDirectories(ida,request,idt,path,CSV,TEXTE,db):
     if not os.path.exists(BASE_DIR):
         os.mkdir(BASE_DIR)
     i=0
-    print("request = "+str(request)+"\n\n")
-    print("ida = "+str(ida))
     for t in idt:
         if i < 10:
             num="00"
@@ -92,8 +98,8 @@ def GenDirectories(ida,request,idt,path,CSV,TEXTE,db):
         os.mkdir(directory)
         finalR=[]
         for r in ida[t[0]] :
-            if r.split(" ")[0] in request and r.split(" ")[0] not in finalR:
-                finalR.append(r.split(" ")[0])
+            if r in request and r not in finalR:
+                finalR.append(r)
 
         title=GetTitleFromRef(t[0], db)
         GenDoc(directory,finalR,path,CSV,TEXTE,title)

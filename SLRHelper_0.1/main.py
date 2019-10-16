@@ -1,30 +1,18 @@
 import configparser
 #from refextract import extract_references_from_file
+from bib_parser import GenRequest, recupID, ShowBar, GenDirectories, sort, ShowBar
+from references import dump_extract, Merge_All_List, filtre, Filtre_title, genBib
 import argparse
 import shutil
 import sys
 import subprocess
-from os import path, mkdir
+import os as os
+
+#TODO VERBOSE COMMAND
 
 BASE_DIR="./Results/"
-pathname = path.dirname(sys.argv[0]) 
-SOURCE_DIR=pathname = path.abspath(pathname)+"/"
-#####################################################
-#
-# To extract all ref in all pdf in a directory
-# all = Extract_From_Dir(BASE_DIR)              
-# save_extract(all,"save_ref.csv")
-#
-#####################################################
-
-
-#####################################################
-#
-# To load all ref in a CSV
-# all = dump_extract("save_ref.csv")
-# print("all => "+str(len(all)))        
-#
-#####################################################
+pathname = os.path.dirname(sys.argv[0]) 
+SOURCE_DIR=pathname = os.path.abspath(pathname)+"/"
 
 def ConfigParse():
     config = configparser.ConfigParser()
@@ -39,12 +27,12 @@ def ConfigParse():
     APPEARANCE=int(config['Filter']['appearance'])
     NKWORDS=int(config['Filter']['NKwords'])
     KWORDS=config['Filter']['Kwords'].split(',')
-    print("Requests = "+str(requests))
-    print("CSV = "+str(CSV))
-    print("Texte = "+str(TEXTE))
-    print("COMPARISON = "+str(COMPARISON))
-    print("APPEARANCE = "+str(APPEARANCE))
-    print("KWORDS = "+str(KWORDS))
+    #print("Requests = "+str(requests))
+    #print("CSV = "+str(CSV))
+    #print("Texte = "+str(TEXTE))
+    #print("COMPARISON = "+str(COMPARISON))
+    #print("APPEARANCE = "+str(APPEARANCE))
+    #print("KWORDS = "+str(KWORDS))
     return requests,CSV,TEXTE, COMPARISON, APPEARANCE, KWORDS, NKWORDS
 
 
@@ -60,32 +48,48 @@ def main():
         print("Use : 'SRLHeper snowball' to dump all references from all PDF in all sub folders of the 'Results' folder, create a CSV file with all extracted references, and a bib file with all the filtered references.")
     else : 
         if arg.command == "start":
-            if path.isdir(BASE_DIR) == False:
-                mkdir(BASE_DIR)
+            if os.path.isdir(BASE_DIR) == False:
+                os.mkdir(BASE_DIR)
+                print("[+] The Results Folder will contain later the folders for the pdf to analyse")
                 srcConf=SOURCE_DIR+"empty.conf"
-                shutil.copyfile(srcConf,"SLR.conf")
-                mkdir("./bib")
+                if os.path.isfile("SLR.conf"):
+                    print("[!] Error SLR.conf already created")
+                    print("[!] Please complete it")
+                else :
+                    shutil.copyfile(srcConf,"SLR.conf")
+                if os.path.isdir("./bib") :
+                    print("[!] Error bib folder already created")
+                else :
+                    os.mkdir("./bib")
+                    print("[+] SLRHelper create a folder 'bib' to put your bibfile in")
+                print("[+] NOW COMPLETE THE SLR.conf FILE FOR FURTHER USE !")
             else :
-                print("Error folder already exist")
+                print("Error Results folder already exist")
         if arg.command == "mergeBib":
             requests,CSV,TEXTE, COMPARISON, APPEARANCE, KWORDS, NKWORDS = ConfigParse()
             r = GenRequest(requests)
-            print("r => "+str(r))
-            path=path.abspath(path.split(__file__)[0])
+            print("[+] The request have been generated")
+            path=os.getcwd()
             ida,db = recupID(r,path)
-            print("\n\n R2 = "+str(r))
             idt=sort(ida)
             ShowBar(idt)
-            #GenGraph(ida,r)
             GenDirectories(ida,r,idt,path,CSV,TEXTE,db)
+            print("[+] Directories created in the Results folder. Please fill them with the rigth pdf paper")
         if arg.command == "snowball":
             requests,CSV,TEXTE, COMPARISON, APPEARANCE, KWORDS,NKWORDS = ConfigParse()
-            cmd=subprocess.run(["./ref_extractor.py",BASE_DIR,"ref.csv"],capture_output=True)
+            print("[*] Reference extraction from all pdf (may take severals minutes)")
+            cmd=subprocess.run(["/usr/bin/SLRHelper_0.1/ref_extractor.py",BASE_DIR,"ref.csv"],capture_output=True)
+            # TODO VERIF
+            print("[+] extraction complete, results in 'ref.csv'")
             all = dump_extract("ref.csv")
+            print("[*] Snowball strating (may take severals minutes)")
             snowball=Merge_All_List(all,COMPARISON)
+            #TODO VERIF
+            print("[*] Merge completed")
             final=filtre(snowball,APPEARANCE)
             final=Filtre_title(final,KWORDS,NKWORDS)
             genBib(final,"snowball.bib")
+            print("[+] BibFile 'snowball.bib' created with all the references to add")
 
 
 if __name__ == '__main__':
