@@ -19,7 +19,8 @@ def autolabel(rects,ax):
                     textcoords="offset points",
                     ha='center', va='bottom')
 
-# Function to generate the list of all requests 
+# Function to generate the list of all requests
+# TODO GENERALLIZE TO N REQUEST 
 def GenRequest(req):
     requests=[]
     for r1 in req[0]:
@@ -32,6 +33,7 @@ def GenRequest(req):
 # Each one is created as : Number_1stAuthor_Year_1stTitleWord
 def recupID(requests,path):
     ida={}
+    check={}
     if not os.path.isdir("bib") :
         print("[!] Error bib folder missing")
         sys.exit()
@@ -45,8 +47,10 @@ def recupID(requests,path):
                 bib_database = bibtexparser.load(bibtex_file)
                 # Merge ref by ID
                 for ref in bib_database.entries:
-                    if ref['ID'] not in ida:
+                    testRef= ref['ID']+ref['title']
+                    if testRef not in check:
                         ida[ref['ID']]=[r]
+                        check[testRef]=1
                         db.entries.append(ref) # to generate the final bib file
                     else :
                         ida[ref['ID']].append(r)

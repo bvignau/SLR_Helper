@@ -1,4 +1,6 @@
 # SLR Helper
+SLR Helper (Systematic Literature Review) is a small command line interface (CLI) written in python to help researchers to conduct Sytematic Literature review by providing a workspace and an organisation.
+It aims to help researchers during merges phases of their work by filtering and snowballing.
 TODO
 
 # Install

@@ -1,4 +1,4 @@
-#!/bin/python2
+#!/usr/bin/python2
 from refextract import extract_references_from_file
 from os import chdir, listdir, path, mkdir
 from references import Reference
