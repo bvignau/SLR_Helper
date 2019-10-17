@@ -94,7 +94,13 @@ def main():
             print("[+] BibFile 'snowball.bib' created with all the references to add")
             print("[*] Please check the file and change the unknow ref")
         if arg.command == "final":
-            db=Mergefinal("final.bib","snowball.bib")
+            if not os.path.isfile("final.bib"):
+                print("[!] Error, missing final.bib")
+            else :
+                if not os.path.isfile("snowball.bib"):
+                    print("[!] Error, missing snowball.bib")
+                else:
+                    db=Mergefinal("final.bib","snowball.bib")
 
 
 if __name__ == '__main__':
