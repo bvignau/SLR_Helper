@@ -78,9 +78,13 @@ def main():
         if arg.command == "snowball":
             requests,CSV,TEXTE, COMPARISON, APPEARANCE, KWORDS,NKWORDS = ConfigParse()
             print("[*] Reference extraction from all pdf (may take severals minutes)")
-            cmd=subprocess.run(["/usr/bin/SLRHelper_0.1/ref_extractor.py",BASE_DIR,"ref.csv"],capture_output=True)
+            cmd=subprocess.run(["/usr/bin/SLRHelper_0.1/ref_extractor.py",BASE_DIR,"ref.csv"])
+            print(str(cmd))
             # TODO VERIF
             print("[+] extraction complete, results in 'ref.csv'")
+            cont=input()
+            while cont != "1":
+                cont=input()
             all = dump_extract("ref.csv")
             print("[*] Snowball strating (may take severals minutes)")
             snowball=Merge_All_List(all,COMPARISON)

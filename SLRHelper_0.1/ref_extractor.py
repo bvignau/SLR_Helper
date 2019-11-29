@@ -39,6 +39,7 @@ def save_extract(L,file):
 
 
 def main():
+    print("extraction des sources")
     parser = argparse.ArgumentParser()
     parser.add_argument('directory')
     parser.add_argument('save')
